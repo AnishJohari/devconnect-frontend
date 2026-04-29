@@ -19,11 +19,14 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          "https://devconnect-backend-vq4a.onrender.com",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         const data = await res.json();
 
