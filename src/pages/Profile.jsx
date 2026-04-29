@@ -5,8 +5,11 @@ function Profile() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const BASE_URL =
+  const PROFILE_URL =
     "https://devconnect-backend-vq4a.onrender.com/api/auth/profile";
+
+  const UPDATE_URL =
+    "https://devconnect-backend-vq4a.onrender.com/api/auth/update";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,7 +29,7 @@ function Profile() {
       try {
         setLoading(true);
 
-        const res = await fetch(BASE_URL, {
+        const res = await fetch(PROFILE_URL, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +60,7 @@ function Profile() {
   // SAVE PROFILE
   const saveProfile = async () => {
     try {
-      const res = await fetch(BASE_URL, {
+      const res = await fetch(UPDATE_URL, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
