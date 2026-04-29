@@ -58,31 +58,38 @@ function Profile() {
   }, [token]);
 
   // SAVE PROFILE
-  const saveProfile = async () => {
-    try {
-      const res = await fetch(UPDATE_URL, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name }),
-      });
+const saveProfile = async () => {
+  try {
+    console.log("PUT request sent");
 
-      const data = await res.json();
+    const res = await fetch(UPDATE_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    });
 
-      if (!res.ok) {
-        alert(data.message || "Update failed");
-        return;
-      }
+    console.log("STATUS:", res.status);
 
-      alert("Profile Updated Successfully");
-      setEditing(false);
-    } catch (err) {
-      console.error(err);
-      alert("Network error while updating profile");
+    const text = await res.text();
+    console.log("RAW RESPONSE:", text);
+
+    const data = JSON.parse(text);
+
+    if (!res.ok) {
+      alert(data.message || "Update failed");
+      return;
     }
-  };
+
+    alert("Profile Updated Successfully");
+    setEditing(false);
+  } catch (err) {
+    console.error("ERROR:", err);
+    alert("Network error while updating profile");
+  }
+};
 
   if (loading) {
     return (
