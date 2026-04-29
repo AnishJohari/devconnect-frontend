@@ -5,44 +5,72 @@ function Profile() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  let user = {};
+  const BASE_URL =
+    "https://devconnect-backend-vq4a.onrender.com/api/auth/profile";
 
-  if (token) {
-    user = JSON.parse(atob(token.split(".")[1]));
+  // redirect if no token
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  // safer token decode (optional use)
+  let user = null;
+  try {
+    if (token) {
+      user = JSON.parse(atob(token.split(".")[1]));
+    }
+  } catch (err) {
+    console.log("Invalid token");
   }
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [editing, setEditing] = useState(false);
 
-  // FETCHING USER FROM BACKEND
+  // FETCH PROFILE
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(
-          "https://devconnect-backend-vq4a.onrender.com",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const res = await fetch(BASE_URL, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
-        const data = await res.json();
+        const text = await res.text();
+        let data;
 
-        setName(data.name);
-        setEmail(data.email);
+        try {
+          data = JSON.parse(text);
+        } catch (err) {
+          console.log("Invalid JSON:", text);
+          alert("Server returned invalid response");
+          return;
+        }
+
+        if (!res.ok) {
+          alert(data.message || "Failed to fetch profile");
+          return;
+        }
+
+        setName(data.name || "");
+        setEmail(data.email || "");
       } catch (err) {
         console.error(err);
+        alert("Network error while fetching profile");
       }
     };
 
     if (token) fetchProfile();
-  }, []);
+  }, [token]);
 
+  // SAVE PROFILE
   const saveProfile = async () => {
     try {
-      const res = await fetch("https://devconnect-backend-vq4a.onrender.com", {
+      const res = await fetch(BASE_URL, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +79,16 @@ function Profile() {
         body: JSON.stringify({ name }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.log("Invalid JSON:", text);
+        alert("Server returned invalid response");
+        return;
+      }
 
       if (!res.ok) {
         alert(data.message || "Update failed");
@@ -59,11 +96,10 @@ function Profile() {
       }
 
       alert("Profile Updated Successfully");
-
       setEditing(false);
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      alert("Network error while updating profile");
     }
   };
 
