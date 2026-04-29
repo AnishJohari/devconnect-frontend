@@ -8,6 +8,11 @@ function Profile() {
   const BASE_URL =
     "https://devconnect-backend-vq4a.onrender.com/api/auth/profile";
 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   // redirect if no token
   useEffect(() => {
     if (!token) {
@@ -15,41 +20,21 @@ function Profile() {
     }
   }, [token, navigate]);
 
-  // safer token decode (optional use)
-  let user = null;
-  try {
-    if (token) {
-      user = JSON.parse(atob(token.split(".")[1]));
-    }
-  } catch (err) {
-    console.log("Invalid token");
-  }
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [editing, setEditing] = useState(false);
-
   // FETCH PROFILE
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        setLoading(true);
+
         const res = await fetch(BASE_URL, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
 
-        const text = await res.text();
-        let data;
-
-        try {
-          data = JSON.parse(text);
-        } catch (err) {
-          console.log("Invalid JSON:", text);
-          alert("Server returned invalid response");
-          return;
-        }
+        const data = await res.json();
 
         if (!res.ok) {
           alert(data.message || "Failed to fetch profile");
@@ -61,6 +46,8 @@ function Profile() {
       } catch (err) {
         console.error(err);
         alert("Network error while fetching profile");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -79,16 +66,7 @@ function Profile() {
         body: JSON.stringify({ name }),
       });
 
-      const text = await res.text();
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.log("Invalid JSON:", text);
-        alert("Server returned invalid response");
-        return;
-      }
+      const data = await res.json();
 
       if (!res.ok) {
         alert(data.message || "Update failed");
@@ -102,6 +80,14 @@ function Profile() {
       alert("Network error while updating profile");
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <div
