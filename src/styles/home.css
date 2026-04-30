@@ -133,21 +133,26 @@ textarea::placeholder {
 
 /* ===== POSTS ===== */
 .post {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 18px;
+  margin-bottom: 50px !important; /* Forces a large physical gap between post 200 and 199 */
+  padding: 30px;
+  border-radius: 24px;
+  
+  /* Deep contrast background */
+  background: rgba(10, 10, 20, 0.4) !important; 
+  backdrop-filter: blur(20px);
 
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(12px);
-
-  transition: 0.3s;
+  /* 3D "Slab" Borders */
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 3px solid rgba(0, 0, 0, 0.5); 
+  
+  /* Floating Shadow */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  transition: transform 0.3s ease;
 }
 
 .post:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  transform: translateY(-10px); /* Lifts the card when you hover */
 }
-
 /* Post actions */
 .post-actions {
   margin-top: 10px;
