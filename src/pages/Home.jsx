@@ -12,12 +12,13 @@ export default function Home() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // Safe decoding of token
   const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
 
   const loadPosts = async () => {
     const data = await getPosts();
-    setPosts(data);
+
+    /* newest first */
+    setPosts(data.reverse());
   };
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function Home() {
 
   const handlePost = async () => {
     if (!token) return navigate("/login");
+
     if (!title || !content) {
       alert("Please fill all fields");
       return;
@@ -42,13 +44,13 @@ export default function Home() {
       await createPost({ title, content }, token);
     }
 
-    loadPosts();
     setTitle("");
     setContent("");
+    loadPosts();
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
+    if (window.confirm("Are you sure?")) {
       await deletePost(id, token);
       loadPosts();
     }
@@ -58,7 +60,11 @@ export default function Home() {
     setTitle(post.title);
     setContent(post.content);
     setEditId(post._id);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Smooth scroll to form
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const logout = () => {
@@ -68,11 +74,12 @@ export default function Home() {
 
   return (
     <div className="page-wrapper">
-      {/* Navigation Bar */}
+      {/* NAVBAR */}
       <nav className="navbar">
         <div className="nav-logo">
           <span className="logo-icon">{"</>"}</span> DevConnect
         </div>
+
         <div className="nav-actions">
           <button
             className="btn-secondary"
@@ -80,6 +87,7 @@ export default function Home() {
           >
             Profile
           </button>
+
           <button className="btn-outline" onClick={logout}>
             Logout
           </button>
@@ -87,6 +95,7 @@ export default function Home() {
       </nav>
 
       <div className="home-container">
+        {/* HEADER */}
         <header className="feed-header">
           <h2 className="heading">DevConnect Feed</h2>
           <p className="subheading">
@@ -94,10 +103,11 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Form Section */}
+        {/* CREATE POST */}
         <div className="form-card">
           <div className="form-group">
             <label>Post Title</label>
+
             <input
               placeholder="What's on your coding mind?"
               value={title}
@@ -107,11 +117,12 @@ export default function Home() {
 
           <div className="form-group">
             <label>Content</label>
+
             <textarea
               placeholder="Describe your achievement or question..."
+              rows="4"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              rows="4"
             />
           </div>
 
@@ -120,26 +131,35 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Feed Section */}
-        <div className="posts-feed">
+        {/* POSTS */}
+        <div className="posts-container">
           {posts.length === 0 ? (
             <p className="empty-msg">No posts yet. Be the first to share!</p>
           ) : (
             posts.map((p) => (
-              <div key={p._id} className="post-card">
-                <div className="post-header">
-                  <h3>{p.title}</h3>
-                  <span className="post-author">
-                    By @{p.user?.name || "Dev"}
-                  </span>
-                </div>
-                <p className="post-content">{p.content}</p>
+              <div className="post" key={p._id}>
+                {/* Header */}
+                <div className="post-top">
+                  <div className="avatar">
+                    {(p.user?.name || "D").charAt(0).toUpperCase()}
+                  </div>
 
+                  <div>
+                    <h3>{p.title}</h3>
+                    <p className="author">By @{p.user?.name || "Dev"}</p>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <p className="post-text">{p.content}</p>
+
+                {/* Actions */}
                 {p.user?._id === userId && (
                   <div className="post-actions">
                     <button className="btn-edit" onClick={() => handleEdit(p)}>
                       Edit
                     </button>
+
                     <button
                       className="btn-delete"
                       onClick={() => handleDelete(p._id)}
