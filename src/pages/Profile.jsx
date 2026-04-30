@@ -15,15 +15,15 @@ function Profile() {
   const [email, setEmail] = useState("");
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // redirect if no token
   useEffect(() => {
     if (!token) {
       navigate("/login");
     }
   }, [token, navigate]);
 
-  // FETCH PROFILE
+  /* FETCH PROFILE */
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -57,39 +57,37 @@ function Profile() {
     if (token) fetchProfile();
   }, [token]);
 
-  // SAVE PROFILE
-const saveProfile = async () => {
-  try {
-    console.log("PUT request sent");
+  /* SAVE PROFILE */
+  const saveProfile = async () => {
+    try {
+      setSaving(true);
 
-    const res = await fetch(UPDATE_URL, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ name }),
-    });
+      const res = await fetch(UPDATE_URL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name }),
+      });
 
-    console.log("STATUS:", res.status);
+      const text = await res.text();
+      const data = JSON.parse(text);
 
-    const text = await res.text();
-    console.log("RAW RESPONSE:", text);
+      if (!res.ok) {
+        alert(data.message || "Update failed");
+        return;
+      }
 
-    const data = JSON.parse(text);
-
-    if (!res.ok) {
-      alert(data.message || "Update failed");
-      return;
+      alert("Profile Updated Successfully");
+      setEditing(false);
+    } catch (err) {
+      console.error(err);
+      alert("Network error while updating profile");
+    } finally {
+      setSaving(false);
     }
-
-    alert("Profile Updated Successfully");
-    setEditing(false);
-  } catch (err) {
-    console.error("ERROR:", err);
-    alert("Network error while updating profile");
-  }
-};
+  };
 
   if (loading) {
     return (
@@ -134,6 +132,7 @@ const saveProfile = async () => {
       {editing ? (
         <button
           onClick={saveProfile}
+          disabled={saving}
           style={{
             marginTop: "15px",
             padding: "10px 20px",
@@ -141,9 +140,28 @@ const saveProfile = async () => {
             borderRadius: "8px",
             cursor: "pointer",
             marginRight: "10px",
+            minWidth: "110px",
+            minHeight: "42px",
+            display: "inline-flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          Save
+          {saving ? (
+            <span
+              style={{
+                width: "18px",
+                height: "18px",
+                border: "3px solid rgba(0,0,0,0.2)",
+                borderTop: "3px solid black",
+                borderRadius: "50%",
+                animation: "spin 0.7s linear infinite",
+                display: "inline-block",
+              }}
+            ></span>
+          ) : (
+            "Save"
+          )}
         </button>
       ) : (
         <button
@@ -174,6 +192,16 @@ const saveProfile = async () => {
       >
         Back to Home
       </button>
+
+      <style>
+        {`
+          @keyframes spin {
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
