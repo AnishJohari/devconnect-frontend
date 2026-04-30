@@ -12,12 +12,27 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    /* Password Validation:
+       - Minimum 8 characters
+       - At least 1 alphabet
+       - At least 1 digit
+       - At least 1 special character
+    */
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&^()_\-+=])[A-Za-z\d@$!%*#?&^()_\-+=]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      alert(
+        "Password must be at least 8 characters and include alphabet, number, and special character.",
+      );
+      return;
+    }
+
     try {
       const data = await signup({ name, email, password });
 
       console.log("REGISTER RESPONSE:", data);
 
-      // safer condition
       if (data && (data.user || data.message === "User created")) {
         alert("Registration successful");
         navigate("/login");

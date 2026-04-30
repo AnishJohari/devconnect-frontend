@@ -23,13 +23,11 @@ body {
   max-width: 1100px;
   padding: 30px;
   border-radius: 25px;
-
   display: flex;
   gap: 30px;
 
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(25px);
-
   border: 1px solid rgba(255, 255, 255, 0.2);
 
   box-shadow:
@@ -84,7 +82,6 @@ button {
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-
   box-shadow: 0 5px 15px rgba(123, 47, 247, 0.4);
 }
 
@@ -106,7 +103,8 @@ button:hover {
 }
 
 /* ===== INPUTS ===== */
-input, textarea {
+input,
+textarea {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
@@ -116,7 +114,6 @@ input, textarea {
 
   background: rgba(255,255,255,0.2);
   color: black;
-
   transition: 0.3s;
 }
 
@@ -131,33 +128,102 @@ textarea::placeholder {
   color: #ddd;
 }
 
-/* ===== POSTS ===== */
-.post {
-  margin-bottom: 50px !important; /* Forces a large physical gap between post 200 and 199 */
-  padding: 30px;
-  border-radius: 24px;
-  
-  /* Deep contrast background */
-  background: rgba(10, 10, 20, 0.4) !important; 
-  backdrop-filter: blur(20px);
+/* ================================= */
+/* ===== UPDATED POSTS SECTION ===== */
+/* ================================= */
 
-  /* 3D "Slab" Borders */
-  border-top: 2px solid rgba(255, 255, 255, 0.3);
-  border-bottom: 3px solid rgba(0, 0, 0, 0.5); 
-  
-  /* Floating Shadow */
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-  transition: transform 0.3s ease;
-}
-
-.post:hover {
-  transform: translateY(-10px); /* Lifts the card when you hover */
-}
-/* Post actions */
-.post-actions {
-  margin-top: 10px;
+.posts-container {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+/* Each individual post */
+.post {
+  position: relative;
+  padding: 22px;
+  border-radius: 22px;
+  overflow: hidden;
+
+  /* blended glass style */
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(255,255,255,0.12);
+
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+
+  transition: all 0.35s ease;
+}
+
+/* glowing side accent */
+.post::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  width: 4px;
+  height: 70%;
+  border-radius: 20px;
+  background: linear-gradient(to bottom, #4cc9f0, #7b2ff7);
+}
+
+/* soft light overlay */
+.post::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 180px;
+  height: 180px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  filter: blur(25px);
+}
+
+/* Hover */
+.post:hover {
+  transform: translateY(-6px) scale(1.01);
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+    0 18px 35px rgba(0,0,0,0.35),
+    0 0 18px rgba(123,47,247,0.18);
+}
+
+/* Text inside post */
+.post h2,
+.post h3 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  color: white;
+}
+
+.post p {
+  margin: 8px 0;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.5;
+}
+
+/* username */
+.post .author {
+  font-size: 14px;
+  color: #cfcfff;
+  margin-bottom: 8px;
+}
+
+/* Actions */
+.post-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.post-actions button {
+  flex: 1;
 }
 
 /* ===== FLOATING ICONS ===== */
@@ -179,7 +245,6 @@ textarea::placeholder {
   bottom: 40px;
 }
 
-/* Extra floating (optional) */
 .icon-right {
   right: 60px;
   top: 150px;
@@ -200,6 +265,10 @@ textarea::placeholder {
   }
 
   .right-section {
-    display: none; /* hide for mobile */
+    display: none;
+  }
+
+  .post-actions {
+    flex-direction: column;
   }
 }
